@@ -1,5 +1,4 @@
-import fs from "fs"
-import * as assert from "node:assert";
+import fs from "fs";
 
 class Level {
     public title: string;
@@ -18,7 +17,12 @@ class Level {
 
     private _difficulties: Difficulty[];
 
-    public constructor(title: string, music_uri: string, preview_uri: string, bpm_low: string) {
+    public constructor(
+        title: string,
+        music_uri: string,
+        preview_uri: string,
+        bpm_low: string
+    ) {
         this.title = title;
         this.music_uri = music_uri;
         this.preview_uri = preview_uri;
@@ -34,9 +38,8 @@ class Level {
         this._offset = "";
         this._bpm_high = "";
 
-        this._difficulties = []
+        this._difficulties = [];
     }
-
 
     set subtitle(value: string) {
         this._subtitle = value;
@@ -80,36 +83,42 @@ class Level {
 }
 
 class Difficulty {
-    public type: string; //dance-single
-    public difficulty: number; //19
-    public difficulty_type: string; //Challenge, Edit o simile
-    public step_artist: string; //ChasePines 29*/18*/2/2
-    public steps: string; //0001...
+    public type: string; // dance-single
+    public difficulty: number; // 19
+    public difficulty_type: string; // Challenge, Edit
+    public step_artist: string; // ChasePines 29*/18*/2/2
+    public steps: string; // 0001...
 
-    public constructor(type: string, difficulty: number, difficulty_type: string, step_artist: string, steps: string) {
+    public constructor(
+        type: string,
+        difficulty: number,
+        difficulty_type: string,
+        step_artist: string,
+        steps: string
+    ) {
         this.type = type;
         this.difficulty = difficulty;
         this.difficulty_type = difficulty_type;
         this.step_artist = step_artist;
         this.steps = steps;
     }
-
-
-
 }
 
-
 export function saveSM(file: Express.Multer.File) {
-    const data = fs.readFileSync(file.path).toString();
+    const data = fs.readFileSync(file.path, "utf-8");
     const headers = parseSMheaders(data);
-    const title = headers["TITLE"];
-    const music_uri = headers["MUSIC"]; // TODO persistent storage solution
-    const preview_uri = headers["SAMPLESTART"]; // TODO cut and save music to play preview without loadind the whole song
-    const bpms = headers["BPMS"];
-    const bpm_low = bpms.split("=")[0];
-    const bpm_high = bpms.split("=")[1];
+
+    // Use ?? "" so Level always receives a string
+    const title = headers["TITLE"] ?? "";
+    const music_uri = headers["MUSIC"] ?? "";
+    const preview_uri = headers["SAMPLESTART"] ?? "";
+    const bpms = headers["BPMS"] ?? "";
+
+    const bpm_low = bpms.split("=")[0] ?? "";
+    const bpm_high = bpms.split("=")[1] ?? "";
 
     const level: Level = new Level(title, music_uri, preview_uri, bpm_low);
+    level.bpm_high = bpm_high;
 
     //--------------------------------------------------------------------------------------------
 
@@ -117,68 +126,50 @@ export function saveSM(file: Express.Multer.File) {
 
     const unparsed: string[][] = parseDifficultyHeaders(data);
 
-    for (let i = 0; i < unparsed.length; i++) {
-        const type = unparsed[i][0];
-        const difficulty = unparsed[i][1];
-        const difficulty_type = unparsed[i][2];
-        const step_artist = unparsed[i][3];
+    const stepsArr = parseSteps(data);
+    let i = 0;
+    for (const row of unparsed) {
+        const type = row[0] ?? "";
+        const difficulty = parseInt(row[1] ?? "0", 10);
+        const difficulty_type = row[2] ?? "";
+        const step_artist = row[3] ?? "";
 
-        const steps = parseSteps(data)[i];
+        const steps = stepsArr[i++] ?? "";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        difficulties.push(
+            new Difficulty(type, difficulty, difficulty_type, step_artist, steps)
+        );
     }
 
+    level.difficulties = difficulties;
 
+    return level;
 }
 
 function parseSMheaders(content: string): Record<string, string> {
     const regex = /#([A-Z]*):(.+);/gm;
     const result: Record<string, string> = {};
 
-    let match;
+    let match: RegExpExecArray | null;
     while ((match = regex.exec(content)) !== null) {
-        if(match[1] == undefined || match[2] == undefined)
-            continue;
+        if (match[1] === undefined || match[2] === undefined) continue;
         console.log("MATCH! - " + match[1] + ": " + match[2]);
         result[match[1].trim()] = match[2].trim();
     }
 
     return result;
 }
+
 function parseDifficultyHeaders(content: string): string[][] {
     const regex = /#NOTES:\s*(.*):\s*(.*):\s*(.*):\s*(.*):/gm;
     const result: string[][] = [];
 
-    let match;
-    first: while((match = regex.exec(content)) !== null) {
-        const temp: string[] = []
-        for(let i = 1; i < 5; i++) {
-            if(match[i] == null)
-                continue first;
-            temp.push(match[i]);
+    let match: RegExpExecArray | null;
+    first: while ((match = regex.exec(content)) !== null) {
+        const temp: string[] = [];
+        for (let i = 1; i < 5; i++) {
+            if (match[i] == null) continue first;
+            temp.push(match[i]!);
         }
         result.push(temp);
     }
@@ -189,15 +180,10 @@ function parseSteps(content: string): string[] {
     const regex = /#NOTES:\s*.*\s*.*\s*.*\s*.*\s*.*\s*([^;]*;)/gm;
     const result: string[] = [];
 
-    let match;
-    first: while((match = regex.exec(content)) !== null) {
-        const temp: string[] = []
-        for(let i = 1; i < 5; i++) {
-            if(match[i] == null)
-                continue first;
-            temp.push(match[i]);
-        }
-        result.push(temp);
+    let match: RegExpExecArray | null;
+    while ((match = regex.exec(content)) !== null) {
+        if (match[1] == null) continue;
+        result.push(match[1]);
     }
     return result;
 }
