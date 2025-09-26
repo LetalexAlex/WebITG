@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebITG - Home</title>
+</head>
+<body>
+<form id="uploadForm">
+    <input type="file" name="file" />
+    <button type="submit">Upload</button>
+</form>
+
+<script type="module">
+    const form = document.getElementById("uploadForm");
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const fileInput = form.querySelector("input[type='file']");
+        if (!fileInput.files?.length) return;
+
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+
+        const res = await fetch("http://localhost:3000/upload", {
+            method: "POST",
+            body: formData,
+        });
+
+        console.log(await res.text());
+    });
+</script>
+</body>
+</html>

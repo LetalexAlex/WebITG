@@ -1,0 +1,23 @@
+{
+  "name": "webitg",
+  "version": "0.0.1",
+  "description": "Web based ITGmania Styled game",
+  "scripts": {
+    "dev": "npm run build && npm run serve",
+    "build": "vite build",
+    "serve": "ts-node --esm src/backend/server.ts",
+    "start": "node dist/backend/server.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "express": "^4.21.2",
+    "multer": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/multer": "^2.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.6"
+  }
+}
