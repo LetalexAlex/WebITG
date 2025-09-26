@@ -44,41 +44,47 @@ class Level {
     set subtitle(value: string) {
         this._subtitle = value;
     }
-
     set artist(value: string) {
         this._artist = value;
     }
-
     set genre(value: string) {
         this._genre = value;
     }
-
     set credit(value: string) {
         this._credit = value;
     }
-
     set banner_uri(value: string) {
         this._banner_uri = value;
     }
-
     set background_uri(value: string) {
         this._background_uri = value;
     }
-
     set cdtitle_uri(value: string) {
         this._cdtitle_uri = value;
     }
-
     set offset(value: string) {
         this._offset = value;
     }
-
     set bpm_high(value: string) {
         this._bpm_high = value;
     }
-
     set difficulties(value: Difficulty[]) {
         this._difficulties = value;
+    }
+
+    toString(): string {
+        return `Level:
+  Title: ${this.title}
+  Subtitle: ${this._subtitle}
+  Artist: ${this._artist}
+  Genre: ${this._genre}
+  Credit: ${this._credit}
+  Music URI: ${this.music_uri}
+  Preview URI: ${this.preview_uri}
+  BPM Low: ${this.bpm_low}
+  BPM High: ${this._bpm_high}
+  Difficulties:
+${this._difficulties.map(d => "    " + d.toString()).join("\n")}`;
     }
 }
 
@@ -101,6 +107,10 @@ class Difficulty {
         this.difficulty_type = difficulty_type;
         this.step_artist = step_artist;
         this.steps = steps;
+    }
+
+    toString(): string {
+        return `Difficulty(${this.type}, ${this.difficulty_type}, ${this.difficulty}) by ${this.step_artist}`;
     }
 }
 
@@ -125,14 +135,15 @@ export function saveSM(file: Express.Multer.File) {
     const difficulties: Difficulty[] = [];
 
     const unparsed: string[][] = parseDifficultyHeaders(data);
-
     const stepsArr = parseSteps(data);
+
     let i = 0;
     for (const row of unparsed) {
         const type = row[0] ?? "";
-        const difficulty = parseInt(row[1] ?? "0", 10);
+        console.log(row)
+        const difficulty = parseInt(row[3] ?? "0", 10);
         const difficulty_type = row[2] ?? "";
-        const step_artist = row[3] ?? "";
+        const step_artist = row[1] ?? "";
 
         const steps = stepsArr[i++] ?? "";
 
@@ -142,7 +153,7 @@ export function saveSM(file: Express.Multer.File) {
     }
 
     level.difficulties = difficulties;
-
+    console.log(level)
     return level;
 }
 
@@ -153,7 +164,7 @@ function parseSMheaders(content: string): Record<string, string> {
     let match: RegExpExecArray | null;
     while ((match = regex.exec(content)) !== null) {
         if (match[1] === undefined || match[2] === undefined) continue;
-        console.log("MATCH! - " + match[1] + ": " + match[2]);
+        //console.log("MATCH! - " + match[1] + ": " + match[2]);
         result[match[1].trim()] = match[2].trim();
     }
 
@@ -168,8 +179,9 @@ function parseDifficultyHeaders(content: string): string[][] {
     first: while ((match = regex.exec(content)) !== null) {
         const temp: string[] = [];
         for (let i = 1; i < 5; i++) {
-            if (match[i] == null) continue first;
-            temp.push(match[i]!);
+            const value = match[i];
+            if (value == null) continue first;
+            temp.push(value);
         }
         result.push(temp);
     }
