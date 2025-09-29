@@ -1,76 +1,33 @@
 import fs from "fs";
 
 class Level {
-    public title: string;
-    private _subtitle: string;
-    private _artist: string;
-    private _genre: string;
-    private _credit: string;
-    public music_uri: string;
-    private _banner_uri: string;
-    private _background_uri: string;
-    private _cdtitle_uri: string;
-    public preview_uri: string;
-    private _offset: string;
-    public bpm_low: string;
-    private _bpm_high: string;
+    public title: string = "";
+    private _subtitle: string = "";
+    private _artist: string = "";
+    private _genre: string = "";
+    private _credit: string = "";
+    public music_uri: string = "";
+    private _banner_uri: string = "";
+    private _background_uri: string = "";
+    private _cdtitle_uri: string = "";
+    public preview_uri: string = "";
+    private _offset: string = "";
+    public bpm_low: string = "";
+    private _bpm_high: string = "";
 
-    private _difficulties: Difficulty[];
+    private _difficulties: Difficulty[] = [];
 
-    public constructor(
-        title: string,
-        music_uri: string,
-        preview_uri: string,
-        bpm_low: string
-    ) {
-        this.title = title;
-        this.music_uri = music_uri;
-        this.preview_uri = preview_uri;
-        this.bpm_low = bpm_low;
-
-        this._subtitle = "";
-        this._artist = "";
-        this._genre = "";
-        this._credit = "";
-        this._banner_uri = "";
-        this._background_uri = "";
-        this._cdtitle_uri = "";
-        this._offset = "";
-        this._bpm_high = "";
-
-        this._difficulties = [];
-    }
-
-    set subtitle(value: string) {
-        this._subtitle = value;
-    }
-    set artist(value: string) {
-        this._artist = value;
-    }
-    set genre(value: string) {
-        this._genre = value;
-    }
-    set credit(value: string) {
-        this._credit = value;
-    }
-    set banner_uri(value: string) {
-        this._banner_uri = value;
-    }
-    set background_uri(value: string) {
-        this._background_uri = value;
-    }
-    set cdtitle_uri(value: string) {
-        this._cdtitle_uri = value;
-    }
-    set offset(value: string) {
-        this._offset = value;
-    }
-    set bpm_high(value: string) {
-        this._bpm_high = value;
-    }
-    set difficulties(value: Difficulty[]) {
-        this._difficulties = value;
-    }
+    // setters
+    set subtitle(value: string) { this._subtitle = value; }
+    set artist(value: string) { this._artist = value; }
+    set genre(value: string) { this._genre = value; }
+    set credit(value: string) { this._credit = value; }
+    set banner_uri(value: string) { this._banner_uri = value; }
+    set background_uri(value: string) { this._background_uri = value; }
+    set cdtitle_uri(value: string) { this._cdtitle_uri = value; }
+    set offset(value: string) { this._offset = value; }
+    set bpm_high(value: string) { this._bpm_high = value; }
+    set difficulties(value: Difficulty[]) { this._difficulties = value; }
 
     toString(): string {
         return `Level:
@@ -89,11 +46,11 @@ ${this._difficulties.map(d => "    " + d.toString()).join("\n")}`;
 }
 
 class Difficulty {
-    public type: string; // dance-single
-    public difficulty: number; // 19
-    public difficulty_type: string; // Challenge, Edit
-    public step_artist: string; // ChasePines 29*/18*/2/2
-    public steps: string; // 0001...
+    public type: string;
+    public difficulty: number;
+    public difficulty_type: string;
+    public step_artist: string;
+    public steps: string;
 
     public constructor(
         type: string,
@@ -118,32 +75,37 @@ export function saveSM(file: Express.Multer.File) {
     const data = fs.readFileSync(file.path, "utf-8");
     const headers = parseSMheaders(data);
 
-    // Use ?? "" so Level always receives a string
-    const title = headers["TITLE"] ?? "";
-    const music_uri = headers["MUSIC"] ?? "";
-    const preview_uri = headers["SAMPLESTART"] ?? "";
-    const bpms = headers["BPMS"] ?? "";
+    const level = new Level();
 
-    const bpm_low = bpms.split("=")[0] ?? "";
-    const bpm_high = bpms.split("=")[1] ?? "";
+    // assign fields one by one, like you did for subtitle
+    if (headers["TITLE"]) level.title = headers["TITLE"];
+    if (headers["MUSIC"]) level.music_uri = headers["MUSIC"];
+    if (headers["SAMPLESTART"]) level.preview_uri = headers["SAMPLESTART"];
+    if (headers["BPMS"]) {
+        const parts = headers["BPMS"].split("=");
+        level.bpm_low = parts[0] ?? "";
+        level.bpm_high = parts[1] ?? "";
+    }
+    if (headers["SUBTITLE"]) level.subtitle = headers["SUBTITLE"];
+    if (headers["ARTIST"]) level.artist = headers["ARTIST"];
+    if (headers["GENRE"]) level.genre = headers["GENRE"];
+    if (headers["CREDIT"]) level.credit = headers["CREDIT"];
+    if (headers["BANNER"]) level.banner_uri = headers["BANNER"];
+    if (headers["BACKGROUND"]) level.background_uri = headers["BACKGROUND"];
+    if (headers["CDTITLE"]) level.cdtitle_uri = headers["CDTITLE"];
+    if (headers["OFFSET"]) level.offset = headers["OFFSET"];
 
-    const level: Level = new Level(title, music_uri, preview_uri, bpm_low);
-    level.bpm_high = bpm_high;
-
-    //--------------------------------------------------------------------------------------------
-
+    // difficulties
     const difficulties: Difficulty[] = [];
-
     const unparsed: string[][] = parseDifficultyHeaders(data);
     const stepsArr = parseSteps(data);
 
     let i = 0;
     for (const row of unparsed) {
         const type = row[0] ?? "";
-        console.log(row)
-        const difficulty = parseInt(row[3] ?? "0", 10);
-        const difficulty_type = row[2] ?? "";
         const step_artist = row[1] ?? "";
+        const difficulty_type = row[2] ?? "";
+        const difficulty = parseInt(row[3] ?? "0", 10);
 
         const steps = stepsArr[i++] ?? "";
 
@@ -153,7 +115,8 @@ export function saveSM(file: Express.Multer.File) {
     }
 
     level.difficulties = difficulties;
-    console.log(level)
+
+    console.log(level.toString());
     return level;
 }
 
@@ -164,7 +127,6 @@ function parseSMheaders(content: string): Record<string, string> {
     let match: RegExpExecArray | null;
     while ((match = regex.exec(content)) !== null) {
         if (match[1] === undefined || match[2] === undefined) continue;
-        //console.log("MATCH! - " + match[1] + ": " + match[2]);
         result[match[1].trim()] = match[2].trim();
     }
 
