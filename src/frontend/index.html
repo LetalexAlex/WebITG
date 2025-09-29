@@ -10,10 +10,15 @@
     <button type="submit">Upload</button>
 </form>
 
+<progress id="progressBar" value="0" max="100" style="width:300px;"></progress>
+<p id="status"></p>
+
 <script type="module">
     const form = document.getElementById("uploadForm");
+    const progressBar = document.getElementById("progressBar");
+    const statusText = document.getElementById("status");
 
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener("submit", (e) => {
         e.preventDefault();
 
         const fileInput = form.querySelector("input[type='file']");
@@ -22,12 +27,27 @@
         const formData = new FormData();
         formData.append("file", fileInput.files[0]);
 
-        const res = await fetch("http://localhost:3000/upload", {
-            method: "POST",
-            body: formData,
+        const xhr = new XMLHttpRequest();
+
+        // track progress
+        xhr.upload.addEventListener("progress", (e) => {
+            if (e.lengthComputable) {
+                const percent = (e.loaded / e.total) * 100;
+                progressBar.value = percent;
+                statusText.textContent = `Uploading... ${Math.round(percent)}%`;
+            }
         });
 
-        console.log(await res.text());
+        xhr.addEventListener("load", () => {
+            statusText.textContent = "✅ Upload complete!";
+        });
+
+        xhr.addEventListener("error", () => {
+            statusText.textContent = "❌ Upload failed!";
+        });
+
+        xhr.open("POST", "http://localhost:3000/upload");
+        xhr.send(formData);
     });
 </script>
 </body>
