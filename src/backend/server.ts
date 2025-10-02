@@ -22,8 +22,8 @@ app.post("/upload", upload.single("file"), (req, res) => {
     return res.status(400).send("No file uploaded.");
   }
   console.log("Uploaded file:", req.file);
-  saveSM(req.file);
-  res.send("File uploaded successfully!");
+  const out = saveSM(req.file);
+  res.send(out.toString());
 });
 
 // Serve frontend build
