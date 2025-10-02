@@ -23,7 +23,7 @@ app.post("/upload", upload.single("file"), (req, res) => {
   }
   console.log("Uploaded file:", req.file);
   const out = saveSM(req.file);
-  res.send(out.toString());
+  res.send(JSON.stringify(out));
 });
 
 // Serve frontend build

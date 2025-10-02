@@ -2,77 +2,57 @@ import fs from "fs";
 
 class Level {
     public title: string = "";
-    private _subtitle: string = "";
-    private _artist: string = "";
-    private _title_translit: string = "";
-    private _subtitle_translit: string = "";
-    private _artist_translit: string = "";
-    private _genre: string = "";
-    private _credit: string = "";
+    public subtitle: string = "";
+    public artist: string = "";
+    public title_translit: string = "";
+    public subtitle_translit: string = "";
+    public artist_translit: string = "";
+    public genre: string = "";
+    public credit: string = "";
     public music_uri: string = "";
-    private _banner_uri: string = "";
-    private _background_uri: string = "";
-    private _jacket_uri: string = "";
-    private _cdtitle_uri: string = "";
+    public banner_uri: string = "";
+    public background_uri: string = "";
+    public jacket_uri: string = "";
+    public cdtitle_uri: string = "";
     public preview_uri: string = "";
-    private _preview_length: string = "";
-    private _selectable: string = "";
-    private _offset: string = "";
+    public preview_length: string = "";
+    public selectable: string = "";
+    public offset: string = "";
     public bpm_low: string = "";
-    private _bpm_high: string = "";
-    private _stops: string = "";
-    private _bgchanges: string = "";
-    private _fgchanges: string = "";
+    public bpm_high: string = "";
+    public stops: string = "";
+    public bgchanges: string = "";
+    public fgchanges: string = "";
 
-    private _difficulties: Difficulty[] = [];
+    public difficulties: Difficulty[] = [];
 
-    // setters
-    set subtitle(value: string) { this._subtitle = value; }
-    set artist(value: string) { this._artist = value; }
-    set title_translit(value: string) { this._title_translit = value; }
-    set subtitle_translit(value: string) { this._subtitle_translit = value; }
-    set artist_translit(value: string) { this._artist_translit = value; }
-    set genre(value: string) { this._genre = value; }
-    set credit(value: string) { this._credit = value; }
-    set banner_uri(value: string) { this._banner_uri = value; }
-    set background_uri(value: string) { this._background_uri = value; }
-    set jacket_uri(value: string) { this._jacket_uri = value; }
-    set cdtitle_uri(value: string) { this._cdtitle_uri = value; }
-    set preview_length(value: string) { this._preview_length = value; }
-    set selectable(value: string) { this._selectable = value; }
-    set offset(value: string) { this._offset = value; }
-    set bpm_high(value: string) { this._bpm_high = value; }
-    set stops(value: string) { this._stops = value; }
-    set bgchanges(value: string) { this._bgchanges = value; }
-    set fgchanges(value: string) { this._fgchanges = value; }
-    set difficulties(value: Difficulty[]) { this._difficulties = value; }
 
     toString(): string {
         return `Level:
   Title: ${this.title}
-  Subtitle: ${this._subtitle}
-  Artist: ${this._artist}
-  Title (Translit): ${this._title_translit}
-  Subtitle (Translit): ${this._subtitle_translit}
-  Artist (Translit): ${this._artist_translit}
-  Genre: ${this._genre}
-  Credit: ${this._credit}
+  Subtitle: ${this.subtitle}
+  Artist: ${this.artist}
+  Title (Translit): ${this.title_translit}
+  Subtitle (Translit): ${this.subtitle_translit}
+  Artist (Translit): ${this.artist_translit}
+  Genre: ${this.genre}
+  Credit: ${this.credit}
   Music URI: ${this.music_uri}
-  Banner URI: ${this._banner_uri}
-  Background URI: ${this._background_uri}
-  Jacket URI: ${this._jacket_uri}
-  CDTitle URI: ${this._cdtitle_uri}
+  Banner URI: ${this.banner_uri}
+  Background URI: ${this.background_uri}
+  Jacket URI: ${this.jacket_uri}
+  CDTitle URI: ${this.cdtitle_uri}
   Preview URI: ${this.preview_uri}
-  Preview Length: ${this._preview_length}
-  Selectable: ${this._selectable}
+  Preview Length: ${this.preview_length}
+  Selectable: ${this.selectable}
   BPM Low: ${this.bpm_low}
-  BPM High: ${this._bpm_high}
-  Offset: ${this._offset}
-  Stops: ${this._stops}
-  BGChanges: ${this._bgchanges}
-  FGChanges: ${this._fgchanges}
+  BPM High: ${this.bpm_high}
+  Offset: ${this.offset}
+  Stops: ${this.stops}
+  BGChanges: ${this.bgchanges}
+  FGChanges: ${this.fgchanges}
   Difficulties:
-${this._difficulties.map(d => "    " + d.toString()).join("\n")}`;
+${this.difficulties.map(d => "    " + d.toString()).join("\n")}`;
     }
 }
 
