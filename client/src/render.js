@@ -1,5 +1,5 @@
 // description: This example demonstrates how to use a Container to group and manipulate multiple sprites
-import { Application, Assets, Container, Sprite, Text, TextStyle} from 'pixi.js';
+import {Application, Assets, Container, Graphics, Point, Rectangle, Sprite, Text, TextStyle} from 'pixi.js';
 
 (async () => {
     // Create a new application
@@ -33,6 +33,58 @@ import { Application, Assets, Container, Sprite, Text, TextStyle} from 'pixi.js'
         },
     });
     app.stage.addChild(myText);
+
+    const uploadFile = new Container({
+        position: new Point(100,200)
+    });
+    uploadFile.eventMode = 'static';
+    uploadFile.cursor = 'pointer';
+
+    uploadFile.on('mousedown', () => {
+        const uploadFileDOM = document.querySelector('#fileInput-sm')
+        uploadFileDOM.click();
+    })
+
+    const fileBox = new Graphics().rect(0,0,100,25).fill(0xFFFFFF);
+    const fileText = new Text({
+        text: 'Upload SM',
+        style: {
+            fill: '#000000',
+            fontSize: 15,
+            fontFamily: 'Fredoka',
+        }
+    });
+    uploadFile.addChild(fileBox);
+    uploadFile.addChild(fileText);
+
+    app.stage.addChild(uploadFile);
+
+
+    //----------------------------------------------------------------------------------------
+    const submitSM = new Container({
+        position: new Point(300,200)
+    });
+    submitSM.eventMode = 'static';
+    submitSM.cursor = 'pointer';
+
+    submitSM.on('mousedown', () => {
+        const submitSMdom = document.querySelector('#submit-sm')
+        submitSMdom.click();
+    })
+
+    const submitSMbox = new Graphics().rect(0,0,100,25).fill(0xFFFFFF);
+    const submitSMtext = new Text({
+        text: 'Submit',
+        style: {
+            fill: '#000000',
+            fontSize: 15,
+            fontFamily: 'Fredoka',
+        }
+    });
+    submitSM.addChild(submitSMbox);
+    submitSM.addChild(submitSMtext);
+
+    app.stage.addChild(submitSM);
 
 
     const arrowContainer = new Container();

@@ -10,19 +10,19 @@
     <form id="form-sm">
         <label for="fileInput-zip">File SM: </label>
         <input type="file" id="fileInput-sm" accept=".sm">
-        <input type="submit" value="Submit">
+        <input type="submit" value="Submit" id="submit-sm">
     </form>
     <form id="form-zip">
         <label for="fileInput-zip">File ZIP: </label>
         <input type="file" id="fileInput-zip" accept=".zip">
-        <input type="submit" value="Submit">
+        <input type="submit" value="Submit" id="submit-zip">
     </form>
     <input type="button" value="clear db" id="clear">
     <input type="button" value="reload songs" id="reload">
     <div id="songs"></div>
 </div>
 
-<script type=module src="src/render.js" defer></script>
 <script type="module" src="src/main.js" defer></script>
+<script type=module src="src/render.js" defer></script>
 </body>
 </html>
