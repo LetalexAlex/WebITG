@@ -16,3 +16,11 @@ export function init() {
 
     console.warn("[init()] Initialized databases.");
 }
+
+export async function getSongsTitles() {
+    const songsArray = await db.songs.toArray();
+
+    const titles = songsArray.map(song => song.title);
+    console.log(titles);
+    return titles
+}
