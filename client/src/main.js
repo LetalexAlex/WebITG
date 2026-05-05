@@ -1,6 +1,6 @@
 import { parseSM } from './parser.js';
 import { db, init } from './database.js';
-import { setSongs } from "./songs";
+import {InputManager} from "./InputManager";
 
 init();
 
@@ -9,13 +9,6 @@ const clearDBbutton = document.querySelector('#clear');
 clearDBbutton.addEventListener('click', () => {
     db.delete();
     init();
-})
-
-const songsList = document.querySelector('#songs');
-await setSongs(songsList);
-const reloadButton = document.querySelector('#reload');
-reloadButton.addEventListener('click', async () => {
-    await setSongs(songsList);
 })
 
 const formSM = document.querySelector('#form-sm');
@@ -67,15 +60,14 @@ formSM.addEventListener('submit', async (e) => {
         });
 
         console.log(`Saved "${song.metadata.TITLE}" with ${song.difficulties.length} charts.`);
-
-        // Refresh the UI list
-        const songsList = document.querySelector('#songs');
-        await setSongs(songsList);
-
+        if(InputManager.onReload)
+            InputManager.onReload();
     } catch (err) {
         console.error("Database Transaction Failed:", err);
     }
 });
+
+InputManager.init();
 /*
 const formZIP = document.querySelector('#form-zip');
 formZIP.addEventListener('submit', async (e) => {

@@ -6,6 +6,8 @@ import {ScreenSelectMusic} from "./Screens/ScreenSelectMusic/ScreenSelectMusic";
 const LOGICAL_WIDTH = 1920;
 const LOGICAL_HEIGHT = 1080;
 
+let SCREEN = "ScreenSelectMusic";
+
 (async () => {
     // Create a new application
     const app = new Application();

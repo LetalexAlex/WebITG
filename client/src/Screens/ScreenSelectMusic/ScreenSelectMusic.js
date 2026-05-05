@@ -1,28 +1,97 @@
 import {Container} from "pixi.js";
 import {AddButton} from "../../pixi/Button";
 import {ScreenSelectMusicSelectable} from "./ScreenSelectMusicSelectable";
-import {getSongsTitles} from "../../database";
+import {getDifficulties, getSongs} from "../../database";
+import {InputManager} from "../../InputManager";
+import {ScreenSelectMusicMeter} from "./ScreenSelectMusicMeter";
 
 export class ScreenSelectMusic extends Container {
     constructor() {
         super();
+        this.listContainer = new Container();
+        this.addChild(this.listContainer);
+        this.selectables = []
+        this.selectedSelectable = 0;
+
+        this.meterContainer = new Container();
+        this.addChild(this.meterContainer);
+        this.meters = []
+        this.selectedMeter = 0;
+
+        this.songs = null;
         this.init();
     }
-    async init() {
+    async refreshSongs() {
+        // 1. Nuke the Pixi objects
+        this.listContainer.removeChildren().forEach(child => child.destroy({ children: true }));
 
-        const titles = await getSongsTitles()
-        console.log(titles);
-        const selectables = [];
+        // 2. CRITICAL: Nuke the JavaScript references
+        this.selectables = [];
+
+        this.songs = await getSongs();
         let y = 0;
-        titles.forEach(title => {
-            console.log(title);
-            const selectable = new ScreenSelectMusicSelectable(title, y);
-            selectables.push(selectable);
-            this.addChild(selectable);
-            y += 98;
-        });
-        selectables[0].setSelected(true)
 
+        for (let i = 0; i < this.songs.length; i++) {
+            const song = this.songs[i];
+            const selectable = new ScreenSelectMusicSelectable(song.title, y);
+
+            // Now this array starts fresh at index 0 every time
+            this.selectables.push(selectable);
+            this.listContainer.addChild(selectable);
+            y += 98;
+        }
+
+        this.selectedSelectable = 0;
+
+        // Safety check: ensure we actually have songs
+        if (this.selectables.length > 0) {
+            this.selectables[this.selectedSelectable].setSelected(true);
+        }
+
+        console.log("Reloaded Songs!")
+        await this.refreshDifficulties()
+    }
+
+    changeSelection(n) {
+        this.selectables[this.selectedSelectable].setSelected(false);
+        this.selectedSelectable += n;
+        if(this.selectedSelectable < 0) {
+           this.selectedSelectable = this.selectables.length - 1;
+        }
+        if(this.selectedSelectable >= this.songs.length) {
+            this.selectedSelectable = 0;
+        }
+        this.selectables[this.selectedSelectable].setSelected(true);
+        console.debug("selected: " + this.selectedSelectable);
+        this.refreshDifficulties();
+    }
+
+    async refreshDifficulties() {
+        this.meterContainer.removeChildren().forEach(child => child.destroy({ children: true }));
+        this.meters = []
+        const meters = await getDifficulties(this.songs[this.selectedSelectable].id);
+
+        let y = 500;
+        for (let i = 0; i < this.meters.length; i++) {
+            const meter = this.meters[i];
+            const selectableMeter = new ScreenSelectMusicMeter(meter.meter, y);
+
+            // Now this array starts fresh at index 0 every time
+            this.meters.push(selectableMeter);
+            this.meterContainer.addChild(selectableMeter);
+            y += 52;
+        }
+        this.selectedMeter = 0;
+
+        // Safety check: ensure we actually have difficulties
+        if (this.meters.length > 0) {
+            this.meters[this.selectedMeter].setSelected(true);
+        }
+
+        console.debug(meters);
+    }
+
+    async init() {
         const uploadFile = new AddButton("Upload SM", 0, 0, 100, 25, "#AAAAAA", "#000000", 18, 'Fredoka', () =>{
             document.querySelector('#fileInput-sm').click();
         })
@@ -32,5 +101,15 @@ export class ScreenSelectMusic extends Container {
             document.querySelector('#submit-sm').click();
         })
         this.addChild(submitSM);
+
+        const resetDB = new AddButton("CLEAR DB", 300, 0, 100, 25, "#AAAAAA", "#000000", 18, 'Fredoka', () =>{
+            document.querySelector('#clear').click();
+        })
+        this.addChild(resetDB);
+
+        InputManager.onReload = () => this.refreshSongs();
+        InputManager.onScreenSelectMusicPrev = () => this.changeSelection(-1);
+        InputManager.onScreenSelectMusicNext = () => this.changeSelection(1);
+        await this.refreshSongs();
     }
 }

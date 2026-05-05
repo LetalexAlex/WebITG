@@ -1,4 +1,5 @@
 import Dexie from 'dexie';
+
 export let db;
 export function init() {
     // Initialize the database
@@ -14,13 +15,13 @@ export function init() {
         steps: '++id, difficultyId'
     });
 
-    console.warn("[init()] Initialized databases.");
+    console.info("[init()] Initialized databases.");
 }
 
-export async function getSongsTitles() {
-    const songsArray = await db.songs.toArray();
+export async function getSongs() {
+    return await db.songs.toArray()
+}
 
-    const titles = songsArray.map(song => song.title);
-    console.log(titles);
-    return titles
+export async function getDifficulties(songID) {
+    return await db.difficulties.where('songId').equals(songID).toArray();
 }

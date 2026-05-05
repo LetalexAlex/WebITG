@@ -1,10 +1,9 @@
 import {AddButton} from "../../pixi/Button";
 
-export class ScreenSelectMusicSelectable extends AddButton {
+export class ScreenSelectMusicMeter extends AddButton {
     selected = false;
     constructor(label,y, width, height, fontSize, fontFamily) {
-        // 630x48 in 720p, 1200x96
-        super(label, 1000 ,y, 1200, 96, "#FFFFFF22", "#FFFFFF", 50, 'Fredoka', null);
+        super(label, 500 ,y, 100, 100, "#FFFFFF22", "#FFFFFF", 50, 'Fredoka', null);
         this.init();
     }
     init() {
