@@ -3,6 +3,8 @@ export const InputManager = {
     onReload: null,
     onScreenSelectMusicNext: null,
     onScreenSelectMusicPrev: null,
+    onScreenSelectMusicMeterNext: null,
+    onScreenSelectMusicMeterPrev: null,
     init() {
         window.addEventListener('keydown', this.onKeyDown.bind(this));
     },
@@ -22,6 +24,12 @@ export const InputManager = {
             switch (direction) {
                 case 'LEFT': this.onScreenSelectMusicPrev(); break;
                 case 'RIGHT': this.onScreenSelectMusicNext(); break;
+            }
+        }
+        if(this.onScreenSelectMusicMeterNext && this.onScreenSelectMusicMeterPrev) {
+            switch (direction) {
+                case 'UP': this.onScreenSelectMusicMeterPrev(); break;
+                case 'DOWN': this.onScreenSelectMusicMeterNext(); break;
             }
         }
         // You could emit an event here that Pixi listens to!

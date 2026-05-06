@@ -15,7 +15,7 @@ export class ScreenSelectMusic extends Container {
 
         this.meterContainer = new Container();
         this.addChild(this.meterContainer);
-        this.meters = []
+        this.meterSelectables = []
         this.selectedMeter = 0;
 
         this.songs = null;
@@ -52,43 +52,56 @@ export class ScreenSelectMusic extends Container {
         await this.refreshDifficulties()
     }
 
-    changeSelection(n) {
+    async changeSelection(n) {
         this.selectables[this.selectedSelectable].setSelected(false);
         this.selectedSelectable += n;
-        if(this.selectedSelectable < 0) {
-           this.selectedSelectable = this.selectables.length - 1;
+        if (this.selectedSelectable < 0) {
+            this.selectedSelectable = this.selectables.length - 1;
         }
-        if(this.selectedSelectable >= this.songs.length) {
+        if (this.selectedSelectable >= this.songs.length) {
             this.selectedSelectable = 0;
         }
         this.selectables[this.selectedSelectable].setSelected(true);
         console.debug("selected: " + this.selectedSelectable);
-        this.refreshDifficulties();
+        await this.refreshDifficulties();
+    }
+
+    async changeMeter(n) {
+        this.meterSelectables[this.selectedMeter].setSelected(false);
+        this.selectedMeter += n;
+        if (this.selectedMeter < 0) {
+            this.selectedMeter = this.meterSelectables.length - 1;
+        }
+        if (this.selectedMeter >= this.meterSelectables.length) {
+            this.selectedMeter = 0;
+        }
+        this.meterSelectables[this.selectedMeter].setSelected(true);
+        console.debug("selected meter: " + this.selectedMeter);
     }
 
     async refreshDifficulties() {
         this.meterContainer.removeChildren().forEach(child => child.destroy({ children: true }));
-        this.meters = []
+        this.meterSelectables = []
+
         const meters = await getDifficulties(this.songs[this.selectedSelectable].id);
 
         let y = 500;
-        for (let i = 0; i < this.meters.length; i++) {
-            const meter = this.meters[i];
+        for (let i = 0; i < meters.length; i++) {
+            const meter = meters[i];
             const selectableMeter = new ScreenSelectMusicMeter(meter.meter, y);
 
             // Now this array starts fresh at index 0 every time
-            this.meters.push(selectableMeter);
+            this.meterSelectables.push(selectableMeter);
             this.meterContainer.addChild(selectableMeter);
-            y += 52;
+            y += 101;
         }
         this.selectedMeter = 0;
 
         // Safety check: ensure we actually have difficulties
-        if (this.meters.length > 0) {
-            this.meters[this.selectedMeter].setSelected(true);
+        if (this.meterSelectables.length > 0) {
+            this.meterSelectables[this.selectedMeter].setSelected(true);
         }
-
-        console.debug(meters);
+        console.log("Reloaded difficulties!")
     }
 
     async init() {
@@ -110,6 +123,8 @@ export class ScreenSelectMusic extends Container {
         InputManager.onReload = () => this.refreshSongs();
         InputManager.onScreenSelectMusicPrev = () => this.changeSelection(-1);
         InputManager.onScreenSelectMusicNext = () => this.changeSelection(1);
+        InputManager.onScreenSelectMusicMeterPrev = () => this.changeMeter(-1);
+        InputManager.onScreenSelectMusicMeterNext = () => this.changeMeter(1);
         await this.refreshSongs();
     }
 }
