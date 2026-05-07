@@ -22,8 +22,7 @@ export function parseZip(arrayBuffer) {
 
         // 2. Assign files to their respective song folders
         if (fileName.toLowerCase().endsWith('.sm')) {
-            const text = new TextDecoder().decode(fileMap[path]);
-            songs[folderPath].sm = text;
+            songs[folderPath].sm = new TextDecoder().decode(fileMap[path]);
         } else if (fileName.toLowerCase().endsWith('.mp3') || fileName.toLowerCase().endsWith('.ogg')) {
             songs[folderPath].music = fileMap[path]; // Store as Uint8Array
         } else if (['.png', '.jpg', '.jpeg'].some(ext => fileName.toLowerCase().endsWith(ext))) {

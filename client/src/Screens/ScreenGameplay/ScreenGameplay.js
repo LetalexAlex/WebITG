@@ -1,5 +1,5 @@
 import {Container} from "pixi.js";
-import {getDifficulties, getDifficulty, getSong, getSteps} from "../../database";
+import {getDifficulty, getSong, getSteps} from "../../database";
 import {ScreenGameplayText} from "./ScreenGameplayText";
 
 export class ScreenGameplay extends Container {

@@ -98,6 +98,7 @@ export class ScreenSelectMusic extends Container {
         this.meterSelectables = []
 
         this.meters = await getDifficulties(this.songs[this.selectedSelectable].id);
+        this.meters = this.meters.filter(x => x.stepsType.trim() === "dance-single");
 
         let y = 500;
         for (let i = 0; i < this.meters.length; i++) {

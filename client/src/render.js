@@ -1,5 +1,4 @@
 import {Application, Assets} from 'pixi.js';
-import {ScreenSelectMusic} from "./Screens/ScreenSelectMusic/ScreenSelectMusic";
 import {ScreenManager} from "./Screens/ScreenManager"
 
 const LOGICAL_WIDTH = 1920;
