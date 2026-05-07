@@ -1,0 +1,30 @@
+{
+  "name": "webitg",
+  "version": "1.0.0",
+  "description": "A Web-based ITG-styled game",
+  "keywords": [],
+  "homepage": "https://github.com/LetalexAlex/WebITG#readme",
+  "bugs": {
+    "url": "https://github.com/LetalexAlex/WebITG/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LetalexAlex/WebITG.git"
+  },
+  "license": "MIT",
+  "author": "LetalexAlex",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dexie": "^4.4.2",
+    "pixi.js": "^8.18.1"
+  },
+  "devDependencies": {
+    "vite": "^8.0.8"
+  }
+}
