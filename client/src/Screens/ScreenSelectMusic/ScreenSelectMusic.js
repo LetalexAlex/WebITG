@@ -1,13 +1,16 @@
 import {Container} from "pixi.js";
-import {AddButton} from "../../pixi/Button";
+import {Button} from "../../pixi/Button";
 import {ScreenSelectMusicSelectable} from "./ScreenSelectMusicSelectable";
 import {getDifficulties, getSongs} from "../../database";
 import {InputManager} from "../../InputManager";
 import {ScreenSelectMusicMeter} from "./ScreenSelectMusicMeter";
 
 export class ScreenSelectMusic extends Container {
-    constructor() {
+    constructor(onEnterSong) {
         super();
+
+        this.onSongEnter = onEnterSong;
+
         this.listContainer = new Container();
         this.addChild(this.listContainer);
         this.selectables = []
@@ -19,6 +22,8 @@ export class ScreenSelectMusic extends Container {
         this.selectedMeter = 0;
 
         this.songs = null;
+        this.meters = null;
+
         this.init();
     }
     async refreshSongs() {
@@ -83,11 +88,11 @@ export class ScreenSelectMusic extends Container {
         this.meterContainer.removeChildren().forEach(child => child.destroy({ children: true }));
         this.meterSelectables = []
 
-        const meters = await getDifficulties(this.songs[this.selectedSelectable].id);
+        this.meters = await getDifficulties(this.songs[this.selectedSelectable].id);
 
         let y = 500;
-        for (let i = 0; i < meters.length; i++) {
-            const meter = meters[i];
+        for (let i = 0; i < this.meters.length; i++) {
+            const meter = this.meters[i];
             const selectableMeter = new ScreenSelectMusicMeter(meter.meter, y);
 
             // Now this array starts fresh at index 0 every time
@@ -104,18 +109,30 @@ export class ScreenSelectMusic extends Container {
         console.log("Reloaded difficulties!")
     }
 
+    async enterSong() {
+        const selectedSong = this.songs[this.selectedSelectable];
+        const selectedDifficulty = this.meters[this.selectedMeter];
+        //console.warn(selectedDifficulty)
+        if (selectedSong && selectedDifficulty) {
+            //console.warn(`Playing ${selectedSong.title} [${selectedDifficulty.meter}]`);
+            this.onSongEnter('ScreenGameplay', {
+                difficultyId: selectedDifficulty.id
+            });
+        }
+    }
+
     async init() {
-        const uploadFile = new AddButton("Upload SM", 0, 0, 100, 25, "#AAAAAA", "#000000", 18, 'Fredoka', () =>{
+        const uploadFile = new Button("Upload SM", 0, 0, 100, 25, "#AAAAAA", "#000000", 18, 'Fredoka', () =>{
             document.querySelector('#fileInput-sm').click();
         })
         this.addChild(uploadFile);
 
-        const submitSM = new AddButton("Save SM", 150, 0, 100, 25, "#AAAAAA", "#000000", 18, 'Fredoka', () =>{
+        const submitSM = new Button("Save SM", 150, 0, 100, 25, "#AAAAAA", "#000000", 18, 'Fredoka', () =>{
             document.querySelector('#submit-sm').click();
         })
         this.addChild(submitSM);
 
-        const resetDB = new AddButton("CLEAR DB", 300, 0, 100, 25, "#AAAAAA", "#000000", 18, 'Fredoka', () =>{
+        const resetDB = new Button("CLEAR DB", 300, 0, 100, 25, "#AAAAAA", "#000000", 18, 'Fredoka', () =>{
             document.querySelector('#clear').click();
         })
         this.addChild(resetDB);
@@ -125,6 +142,7 @@ export class ScreenSelectMusic extends Container {
         InputManager.onScreenSelectMusicNext = () => this.changeSelection(1);
         InputManager.onScreenSelectMusicMeterPrev = () => this.changeMeter(-1);
         InputManager.onScreenSelectMusicMeterNext = () => this.changeMeter(1);
+        InputManager.onScreenSelectEnter = () => this.enterSong();
         await this.refreshSongs();
     }
 }

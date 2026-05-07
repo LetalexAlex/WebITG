@@ -25,3 +25,15 @@ export async function getSongs() {
 export async function getDifficulties(songID) {
     return await db.difficulties.where('songId').equals(songID).toArray();
 }
+
+export async function getSteps(diffID) {
+    return await db.steps.where('difficultyId').equals(diffID).toArray();
+}
+
+export async function getDifficulty(difficultyID) {
+    return await db.difficulties.where('id').equals(difficultyID).toArray();
+}
+
+export async function getSong(songID){
+    return await db.songs.where('id').equals(songID).toArray();
+}

@@ -1,18 +1,13 @@
-// description: This example demonstrates how to use a Container to group and manipulate multiple sprites
-import {Application, Assets, Container, Graphics, Point, Rectangle, Sprite, Text, TextStyle} from 'pixi.js';
-import {AddButton} from "./pixi/Button";
+import {Application, Assets} from 'pixi.js';
 import {ScreenSelectMusic} from "./Screens/ScreenSelectMusic/ScreenSelectMusic";
+import {ScreenManager} from "./Screens/ScreenManager"
 
 const LOGICAL_WIDTH = 1920;
 const LOGICAL_HEIGHT = 1080;
 
-let SCREEN = "ScreenSelectMusic";
-
 (async () => {
-    // Create a new application
     const app = new Application();
 
-    // Initialize the application
     await app.init({ background: '#000000', resizeTo: window });
     window.addEventListener("resize", () => resize(app))
     resize(app)
@@ -33,13 +28,18 @@ let SCREEN = "ScreenSelectMusic";
 
     // Append the application canvas to the document body
     document.body.appendChild(app.canvas);
-
+/*
     let screen = new ScreenSelectMusic();
     app.stage.addChild(screen);
+ */
+    let screenManager = new ScreenManager(app)
+
     app.ticker.add((time) => {
 
     });
 })();
+
+
 
 function resize(app) {
     const screenWidth = window.innerWidth;

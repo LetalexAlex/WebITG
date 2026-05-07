@@ -5,6 +5,7 @@ export const InputManager = {
     onScreenSelectMusicPrev: null,
     onScreenSelectMusicMeterNext: null,
     onScreenSelectMusicMeterPrev: null,
+    onScreenSelectEnter: null,
     init() {
         window.addEventListener('keydown', this.onKeyDown.bind(this));
     },
@@ -15,6 +16,7 @@ export const InputManager = {
             case 'ArrowUp':    this.trigger('UP'); break;
             case 'ArrowRight': this.trigger('RIGHT'); break;
             case 'KeyR': this.general('RELOAD'); break;
+            case 'Enter': this.general('ENTER'); break;
         }
     },
     trigger(direction) {
@@ -38,6 +40,9 @@ export const InputManager = {
         console.debug(`[g] Input received: ${input}`);
         if(input === 'RELOAD' && this.onReload) {
             this.onReload();
+        }
+        if(input === 'ENTER' && this.onScreenSelectEnter) {
+            this.onScreenSelectEnter();
         }
     }
 };

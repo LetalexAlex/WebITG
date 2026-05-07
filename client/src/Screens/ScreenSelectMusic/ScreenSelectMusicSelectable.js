@@ -1,6 +1,6 @@
-import {AddButton} from "../../pixi/Button";
+import {Button} from "../../pixi/Button";
 
-export class ScreenSelectMusicSelectable extends AddButton {
+export class ScreenSelectMusicSelectable extends Button {
     selected = false;
     constructor(label,y) {
         // 630x48 in 720p, 1200x96

@@ -1,6 +1,6 @@
 import {Container, Graphics, Text} from "pixi.js";
 
-export class AddButton extends Container {
+export class Button extends Container {
     box;
     text;
 
