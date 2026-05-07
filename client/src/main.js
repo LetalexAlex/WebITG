@@ -46,6 +46,7 @@ formSM.addEventListener('submit', async (e) => {
                         stepsType: diffData.stepsType.trim(),
                         difficulty: diffData.difficulty.trim(),
                         meter: parseInt(diffData.meter) || 0,
+                        stepsArtist: diffData.stepsArtist.trim(),
                         // radarValues is preserved but not indexed
                         radarValues: diffData.radarValues
                     });

@@ -38,13 +38,13 @@ export function parseSM(rawText) {
     const songData = {
         filetype: "sm"
     };
-    const metadataRegex = [...rawText.matchAll(/^#(?!NOTES)(.+):(.*);/mg)];
+    const metadataRegex = [...rawText.matchAll(/#(?!NOTES)([^:]+):([\s\S]*?);/g)];
     //console.log(metadata)
     songData.metadata = Object.fromEntries(
         // in k/v pair
         metadataRegex.map(([full, key, value]) => [
             key,
-            value === "" ? null : value
+            value === "" ? null : value.trim()
         ])
     );
     songData.difficulties = parseNotes(rawText);
@@ -60,7 +60,7 @@ function parseNotes(rawText) {
         //console.log(diff);
         const difficulty = {
             stepsType: diff[1],
-            description: diff[2],
+            stepsArtist: diff[2],
             difficulty: diff[3],
             meter: diff[4],
             radarValues: diff[5],

@@ -59,8 +59,9 @@ export class ScreenSelectMusic extends Container {
         }
 
         console.log("Reloaded Songs!");
-        await this.showSongInfo();
+
         await this.refreshDifficulties();
+        await this.showSongInfo(this.songs[this.selectedSelectable]);
     }
 
     async changeSelection(n) {
@@ -89,7 +90,7 @@ export class ScreenSelectMusic extends Container {
         }
         this.meterSelectables[this.selectedMeter].setSelected(true);
         console.debug("selected meter: " + this.selectedMeter);
-        await this.showSongInfo()
+        await this.showSongInfo(this.songs[this.selectedSelectable])
     }
 
     async refreshDifficulties() {
@@ -129,16 +130,21 @@ export class ScreenSelectMusic extends Container {
         }
     }
 
-    async showSongInfo(songData) { //TODO FIX
+    async showSongInfo(songData) {
         this.infoPanel.removeChildren().forEach(child => child.destroy({ children: true }));
         let artistText = new ScreenSelectMusicText(songData.artist, 30, 200, 200)
         this.infoPanel.addChild(artistText);
         let bpmText = new ScreenSelectMusicText(songData.bpms, 50, 200, 250);
         this.infoPanel.addChild(bpmText);
-        console.warn(this.selectedMeter);
-        console.warn(steps);
-        let steps = await getSteps(this.selectedMeter.id);
-        let NPSGraph = new ScreenSelectMusicNPSGraph(steps);
+        let diff = this.meters[this.selectedMeter]
+        // console.warn(diff);
+
+        let steps = (await getSteps(diff.id))[0];
+        // console.warn(steps);
+
+        let stepsArtist = new ScreenSelectMusicText(`STEPS: ${diff.stepsArtist}`, 30, 0, 450);
+        this.infoPanel.addChild(stepsArtist);
+        let NPSGraph = new ScreenSelectMusicNPSGraph(steps, 0, 500, 650, 175);
         this.infoPanel.addChild(NPSGraph);
     }
 

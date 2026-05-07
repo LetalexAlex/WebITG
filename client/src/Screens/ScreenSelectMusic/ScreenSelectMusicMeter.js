@@ -3,7 +3,7 @@ import {Button} from "../../pixi/Button";
 export class ScreenSelectMusicMeter extends Button {
     selected = false;
     constructor(label,y) {
-        super(label, 700, y, 100, 100, "#FFFFFF22", "#FFFFFF", 50, 'Fredoka', null);
+        super(" " + label, 700, y, 100, 100, "#FFFFFF22", "#FFFFFF", 100, 'Wendy', null);
         this.init();
     }
     init() {
