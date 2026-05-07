@@ -6,6 +6,7 @@ export class ScreenSelectMusicText extends Container {
         if(w && h && BGcolor){
             this.hasBackground = true;
             this.bg = new Graphics().rect(0,0,w,h).fill(BGcolor);
+            this.addChild(this.bg);
         }
 
 

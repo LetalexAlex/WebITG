@@ -6,6 +6,7 @@ import {InputManager} from "../../InputManager";
 import {ScreenSelectMusicMeter} from "./ScreenSelectMusicMeter";
 import {ScreenSelectMusicText} from "./ScreenSelectMusicText";
 import {ScreenSelectMusicNPSGraph} from "./ScreenSelectMusicNPSGraph";
+import {calculateTotalDuration} from "../../MathUtils";
 
 export class ScreenSelectMusic extends Container {
     constructor(onEnterSong) {
@@ -133,19 +134,51 @@ export class ScreenSelectMusic extends Container {
 
     async showSongInfo(songData) {
         this.infoPanel.removeChildren().forEach(child => child.destroy({ children: true }));
-        let artistText = new ScreenSelectMusicText(songData.artist, 30, 200, 200)
-        this.infoPanel.addChild(artistText);
-        let bpmText = new ScreenSelectMusicText(songData.bpms, 50, 200, 250);
-        this.infoPanel.addChild(bpmText);
+        const smallInfo = new Container();
+
+        smallInfo.y = 300
+
+        const artistText = new ScreenSelectMusicText(`ARTIST ${songData.artist}`, 50, 0, 0)
+        smallInfo.addChild(artistText);
+
+        //calculate minmax bpms
+
+        const values = songData.bpms.trim()
+            .split(',')
+            .map(pair => {
+                return parseFloat(pair.split('=')[1].trim());
+            })
+            .filter(val => !isNaN(val));
+
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        let text;
+
+        if(min - max === 0) {
+            text = max
+        } else {
+            text = `${min} - ${max}`;
+        }
+        let bpmText = new ScreenSelectMusicText(`BPM ${text}`, 50, 0, 50);
+        smallInfo.addChild(bpmText);
+
+
+
+        this.infoPanel.addChild(smallInfo);
+
         let diff = this.meters[this.selectedMeter]
         // console.warn(diff);
 
         let steps = (await getSteps(diff.id))[0];
         // console.warn(steps);
 
-        let stepsArtist = new ScreenSelectMusicText(`STEPS: ${diff.stepsArtist}`, 30, 0, 450);
+        let duration = calculateTotalDuration(songData.bpms.trim(), (steps.noteData.trim().match(/,/gm)).length);
+        const lengthText = new ScreenSelectMusicText(`LENGTH ${duration.minutes}:${duration.seconds}`, 50, 300, 50);
+        smallInfo.addChild(lengthText);
+
+        let stepsArtist = new ScreenSelectMusicText(`STEPS: ${diff.stepsArtist}`, 30, 0, 450, 650, 50, "#FFFFFF");
         this.infoPanel.addChild(stepsArtist);
-        let NPSGraph = new ScreenSelectMusicNPSGraph(steps, 0, 500, 650, 175);
+        let NPSGraph = new ScreenSelectMusicNPSGraph(steps, 0, 510, 650, 175);
         this.infoPanel.addChild(NPSGraph);
     }
 

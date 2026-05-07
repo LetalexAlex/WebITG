@@ -7,7 +7,7 @@ export class ScreenSelectMusicMeter extends Button {
         this.init();
     }
     init() {
-
+        this.text.y = this.text.y - 17;
     }
     setSelected(selected) {
         this.selected = selected;
