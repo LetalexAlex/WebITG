@@ -1,9 +1,11 @@
 import {Container} from "pixi.js";
 import {Button} from "../../pixi/Button";
 import {ScreenSelectMusicSelectable} from "./ScreenSelectMusicSelectable";
-import {getDifficulties, getSongs} from "../../database";
+import {getDifficulties, getSongs, getSteps} from "../../database";
 import {InputManager} from "../../InputManager";
 import {ScreenSelectMusicMeter} from "./ScreenSelectMusicMeter";
+import {ScreenSelectMusicText} from "./ScreenSelectMusicText";
+import {ScreenSelectMusicNPSGraph} from "./ScreenSelectMusicNPSGraph";
 
 export class ScreenSelectMusic extends Container {
     constructor(onEnterSong) {
@@ -20,6 +22,9 @@ export class ScreenSelectMusic extends Container {
         this.addChild(this.meterContainer);
         this.meterSelectables = []
         this.selectedMeter = 0;
+
+        this.infoPanel = new Container();
+        this.addChild(this.infoPanel);
 
         this.songs = null;
         this.meters = null;
@@ -53,8 +58,9 @@ export class ScreenSelectMusic extends Container {
             this.selectables[this.selectedSelectable].setSelected(true);
         }
 
-        console.log("Reloaded Songs!")
-        await this.refreshDifficulties()
+        console.log("Reloaded Songs!");
+        await this.showSongInfo();
+        await this.refreshDifficulties();
     }
 
     async changeSelection(n) {
@@ -69,6 +75,7 @@ export class ScreenSelectMusic extends Container {
         this.selectables[this.selectedSelectable].setSelected(true);
         console.debug("selected: " + this.selectedSelectable);
         await this.refreshDifficulties();
+        await this.showSongInfo(this.songs[this.selectedSelectable]);
     }
 
     async changeMeter(n) {
@@ -82,6 +89,7 @@ export class ScreenSelectMusic extends Container {
         }
         this.meterSelectables[this.selectedMeter].setSelected(true);
         console.debug("selected meter: " + this.selectedMeter);
+        await this.showSongInfo()
     }
 
     async refreshDifficulties() {
@@ -106,7 +114,7 @@ export class ScreenSelectMusic extends Container {
         if (this.meterSelectables.length > 0) {
             this.meterSelectables[this.selectedMeter].setSelected(true);
         }
-        console.log("Reloaded difficulties!")
+        console.debug   ("Reloaded difficulties!")
     }
 
     async enterSong() {
@@ -120,6 +128,20 @@ export class ScreenSelectMusic extends Container {
             });
         }
     }
+
+    async showSongInfo(songData) { //TODO FIX
+        this.infoPanel.removeChildren().forEach(child => child.destroy({ children: true }));
+        let artistText = new ScreenSelectMusicText(songData.artist, 30, 200, 200)
+        this.infoPanel.addChild(artistText);
+        let bpmText = new ScreenSelectMusicText(songData.bpms, 50, 200, 250);
+        this.infoPanel.addChild(bpmText);
+        console.warn(this.selectedMeter);
+        console.warn(steps);
+        let steps = await getSteps(this.selectedMeter.id);
+        let NPSGraph = new ScreenSelectMusicNPSGraph(steps);
+        this.infoPanel.addChild(NPSGraph);
+    }
+
 
     async init() {
         const uploadFile = new Button("Upload SM", 0, 0, 100, 25, "#AAAAAA", "#000000", 18, 'Fredoka', () =>{
