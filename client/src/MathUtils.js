@@ -1,33 +1,32 @@
-export function calculateTotalDuration(dataString, totalMeasures, beatsPerMeasure = 4) {
-    // 1. Parse the string into an array of objects { measure, bpm }
-    const changes = dataString
-        .trim()
-        .split(',')
+export function calculateTotalDuration(dataString, totalBeats) {
+    const changes = dataString.trim().split(/\s*,\s*/)
         .map(line => {
-            const [measure, bpm] = line.split('=').map(Number);
-            return { measure, bpm };
+            const [pos, bpm] = line.split('=').map(Number);
+            return { pos, bpm };
         })
-        .sort((a, b) => a.measure - b.measure);
+        .sort((a, b) => a.pos - b.pos);
 
     let totalSeconds = 0;
 
     for (let i = 0; i < changes.length; i++) {
         const current = changes[i];
-        // The "end" of this BPM section is either the next change or the song end
-        const nextMeasure = (i + 1 < changes.length)
-            ? changes[i + 1].measure
-            : totalMeasures;
 
-        const measureCount = nextMeasure - current.measure;
-        const segmentBeats = measureCount * beatsPerMeasure;
-        const segmentSeconds = (segmentBeats / current.bpm) * 60;
+        // Determine the end point for this segment:
+        // It's either the next BPM change OR the end of the song.
+        const nextPos = (i + 1 < changes.length)
+            ? changes[i + 1].pos
+            : totalBeats;
 
-        totalSeconds += segmentSeconds;
+        const delta = nextPos - current.pos;
+
+        // Only add time if the song actually continues past this point
+        if (delta > 0) {
+            totalSeconds += (delta / current.bpm) * 60;
+        }
     }
 
-    return {
-        rawSeconds: totalSeconds,
-        minutes: Math.floor(totalSeconds / 60),
-        seconds: Math.floor(totalSeconds % 60)
-    };
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = Math.round(totalSeconds % 60);
+
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
 }

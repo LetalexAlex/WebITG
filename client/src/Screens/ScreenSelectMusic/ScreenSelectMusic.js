@@ -172,8 +172,8 @@ export class ScreenSelectMusic extends Container {
         let steps = (await getSteps(diff.id))[0];
         // console.warn(steps);
 
-        let duration = calculateTotalDuration(songData.bpms.trim(), (steps.noteData.trim().match(/,/gm)).length);
-        const lengthText = new ScreenSelectMusicText(`LENGTH ${duration.minutes}:${duration.seconds}`, 50, 300, 50);
+        let duration = calculateTotalDuration(songData.bpms.trim(), (steps.noteData.trim().match(/,/gm)).length * 4);
+        const lengthText = new ScreenSelectMusicText(`LENGTH ${duration}`, 50, 300, 50);
         smallInfo.addChild(lengthText);
 
         let stepsArtist = new ScreenSelectMusicText(`STEPS: ${diff.stepsArtist}`, 30, 0, 450, 650, 50, "#FFFFFF");
