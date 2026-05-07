@@ -44,7 +44,7 @@ export class ScreenSelectMusic extends Container {
 
         for (let i = 0; i < this.songs.length; i++) {
             const song = this.songs[i];
-            const selectable = new ScreenSelectMusicSelectable(song.title, y);
+            const selectable = new ScreenSelectMusicSelectable(song.title, y, song.subtitle);
 
             // Now this array starts fresh at index 0 every time
             this.selectables.push(selectable);
@@ -138,7 +138,7 @@ export class ScreenSelectMusic extends Container {
 
         smallInfo.y = 300
 
-        const artistText = new ScreenSelectMusicText(`ARTIST ${songData.artist}`, 50, 0, 0)
+        const artistText = new ScreenSelectMusicText(`ARTIST ${songData.artist}`, 40, 0, 0)
         smallInfo.addChild(artistText);
 
         //calculate minmax bpms
@@ -155,11 +155,11 @@ export class ScreenSelectMusic extends Container {
         let text;
 
         if(min - max === 0) {
-            text = max
+            text = Math.round(max);
         } else {
-            text = `${min} - ${max}`;
+            text = `${Math.round(min)} - ${Math.round(max)}`;
         }
-        let bpmText = new ScreenSelectMusicText(`BPM ${text}`, 50, 0, 50);
+        let bpmText = new ScreenSelectMusicText(`BPM ${text}`, 40, 0, 50);
         smallInfo.addChild(bpmText);
 
 
@@ -173,7 +173,7 @@ export class ScreenSelectMusic extends Container {
         // console.warn(steps);
 
         let duration = calculateTotalDuration(songData.bpms.trim(), (steps.noteData.trim().match(/,/gm)).length * 4);
-        const lengthText = new ScreenSelectMusicText(`LENGTH ${duration}`, 50, 300, 50);
+        const lengthText = new ScreenSelectMusicText(`LENGTH ${duration}`, 40, 300, 50);
         smallInfo.addChild(lengthText);
 
         let stepsArtist = new ScreenSelectMusicText(`STEPS: ${diff.stepsArtist}`, 30, 0, 450, 650, 50, "#FFFFFF");
